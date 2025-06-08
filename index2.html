@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Stone Paper Scissors Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4d4d;
+            --secondary: #4d79ff;
+            --accent: #ffcc00;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background with rotating images */
+        .bg-image {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.2;
+            z-index: -1;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        /* Position your background images in all corners */
+        .bg-image:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            background-image: url('YOUR_BACKGROUND_IMAGE_URL');
+            animation-delay: 0s;
+        }
+
+        .bg-image:nth-child(2) {
+            top: 70%;
+            left: 80%;
+            background-image: url('YOUR_BACKGROUND_IMAGE_URL');
+            animation-delay: 2s;
+        }
+
+        .bg-image:nth-child(3) {
+            top: 30%;
+            left: 70%;
+            background-image: url('YOUR_BACKGROUND_IMAGE_URL');
+            animation-delay: 4s;
+        }
+
+        .bg-image:nth-child(4) {
+            top: 80%;
+            left: 20%;
+            background-image: url('YOUR_BACKGROUND_IMAGE_URL');
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Splash Screen Styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .splash-content {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 500px;
+        }
+
+        .logo {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .game-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, var(--primary), var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .splash-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .splash-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .splash-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .splash-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Game Styles */
+        .game-container {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 95%;
+            max-width: 900px;
+            margin: 2rem auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 204, 0, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--light), #ddd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .game-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .game-icons .icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .game-icons .icon:hover {
+            transform: translateY(-5px) rotate(10deg) scale(1.2);
+        }
+
+        .mode-select {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-btn.active {
+            background-color: var(--secondary);
+            box-shadow: 0 4px 15px rgba(77, 121, 255, 0.5);
+        }
+
+        .mode-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .player-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .player-label {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .vs-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .vs-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            z-index: -1;
+            opacity: 0.7;
+            animation: pulse 2s infinite;
+        }
+
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 0.5rem 2rem;
+            min-width: 100px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .choices {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .choice {
+            font-size: 1.1rem;
+            padding: 1.8rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 150px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .choice:hover::before {
+            transform: translateX(100%);
+        }
+
+        .choice-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .choice-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .choice:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .choice:hover .choice-icon {
+            transform: scale(1.2);
+        }
+
+        .choice:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .choice span {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .game-info {
+            margin: 2rem 0;
+            min-height: 120px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #opponent-choice {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.9;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #result {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+        }
+
+        #winner-message {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            color: var(--accent);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .reset-btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1.5rem auto 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reset-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .reset-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .reset-btn:hover::before {
+            left: 100%;
+        }
+
+        .reset-icon {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes flash {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease;
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        .flash {
+            animation: flash 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 1.5rem;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .choices {
+                gap: 1rem;
+            }
+            
+            .choice {
+                width: 120px;
+                padding: 1.2rem;
+            }
+            
+            .choice-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .score-container {
+                gap: 1.5rem;
+            }
+            
+            .vs-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+            
+            .score {
+                font-size: 2.5rem;
+                padding: 0.5rem 1.5rem;
+                min-width: 80px;
+            }
+
+            .game-title {
+                font-size: 2.2rem;
+            }
+
+            .splash-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+                min-width: 160px;
+            }
+
+            .logo {
+                width: 140px;
+                height: 140px;
+                font-size: 40px;
+            }
+
+            #result {
+                font-size: 1.3rem;
+            }
+
+            #winner-message {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mode-select {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .choices {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .choice {
+                width: 80%;
+                max-width: 200px;
+            }
+            
+            .score-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .vs-circle {
+                margin: 1rem 0;
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background images in all corners -->
+    <div class="bg-image"></div>
+    <div class="bg-image"></div>
+    <div class="bg-image"></div>
+    <div class="bg-image"></div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen animate__animated animate__fadeIn">
+        <div class="splash-content">
+            <div class="logo animate__animated animate__bounceIn">
+                <!-- Replace with your logo image -->
+                <img src="MV5BZTcyNjc5YTAtOGFjNy00YmZiLWFjMmUtNTdjNmQzMDViOWM2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Game Logo">
+            </div>
+            <h1 class="game-title animate__animated animate__fadeInUp">Stone Paper Scissors</h1>
+            <div class="mode-buttons">
+                <button id="splash-computer" class="splash-btn animate__animated animate__fadeInLeft">🤖 VS Computer</button>
+                <button id="splash-local" class="splash-btn animate__animated animate__fadeInRight">👥 Local 2 Player</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="game-container">
+        <div class="header animate__animated animate__bounceIn">
+            <h1>Rock Paper Scissors</h1>
+            <div class="game-icons">
+                <div class="icon">
+                    <!-- Stone icon -->
+                    <img src="images-removebg-preview (1).png" alt="Stone">
+                </div>
+                <div class="icon">
+                    <!-- Paper icon -->
+                    <img src="images__1_-removebg-preview.png" alt="Paper">
+                </div>
+                <div class="icon">
+                    <!-- Scissors icon -->
+                    <img src="images__2_-removebg-preview.png" alt="Scissors">
+                </div>
+            </div>
+        </div>
+
+        <div class="mode-select animate__animated animate__fadeIn">
+            <button id="computer-mode" class="mode-btn active">
+                🤖 Play with Computer
+            </button>
+            <button id="local-mode" class="mode-btn">
+                👥 Local 2 Player
+            </button>
+        </div>
+
+        <div class="score-container animate__animated animate__fadeIn">
+            <div class="player-score">
+                <div class="player-label" id="player1-label">You</div>
+                <div id="user-score" class="score">0</div>
+            </div>
+            <div class="vs-circle">VS</div>
+            <div class="player-score">
+                <div class="player-label" id="player2-label">Computer</div>
+                <div id="computer-score" class="score">0</div>
+            </div>
+        </div>
+
+        <div class="choices" id="choices-container">
+            <button class="choice animate__animated animate__fadeInUp" id="rock">
+                <div class="choice-icon">
+                    <!-- Stone image -->
+                    <img src="images-removebg-preview (1).png" alt="Stone">
+                </div>
+                <span>Rock</span>
+            </button>
+            <button class="choice animate__animated animate__fadeInUp" id="paper">
+                <div class="choice-icon">
+                    <!-- Paper image -->
+                    <img src="images__1_-removebg-preview.png" alt="Paper">
+                </div>
+                <span>Paper</span>
+            </button>
+            <button class="choice animate__animated animate__fadeInUp" id="scissors">
+                <div class="choice-icon">
+                    <!-- Scissors image -->
+                    <img src="images__2_-removebg-preview.png" alt="Scissors">
+                </div>
+                <span>Scissors</span>
+            </button>
+        </div>
+
+        <div class="game-info">
+            <div id="opponent-choice" class="animate__animated">Opponent is thinking...</div>
+            <div id="result" class="animate__animated">Make your move!</div>
+            <div id="winner-message" class="animate__animated"></div>
+        </div>
+
+        <button id="reset-btn" class="reset-btn animate__animated animate__fadeIn">
+            <div class="reset-icon">🔄</div>
+            Reset Game
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Splash Screen Elements
+            const splashScreen = document.getElementById('splash-screen');
+            const gameContainer = document.getElementById('game-container');
+            const splashComputerBtn = document.getElementById('splash-computer');
+            const splashLocalBtn = document.getElementById('splash-local');
+            
+            // Game Elements
+            const userScoreEl = document.getElementById('user-score');
+            const computerScoreEl = document.getElementById('computer-score');
+            const resultEl = document.getElementById('result');
+            const opponentChoiceEl = document.getElementById('opponent-choice');
+            const winnerMessageEl = document.getElementById('winner-message');
+            const choices = document.querySelectorAll('.choice');
+            const computerModeBtn = document.getElementById('computer-mode');
+            const localModeBtn = document.getElementById('local-mode');
+            const resetBtn = document.getElementById('reset-btn');
+            const player1Label = document.getElementById('player1-label');
+            const player2Label = document.getElementById('player2-label');
+            const choicesContainer = document.getElementById('choices-container');
+
+            // Game state
+            let userScore = 0;
+            let computerScore = 0;
+            let mode = 'computer';
+            let localTurn = 'Player 1';
+            let localPlayer1Choice = '';
+            let gameActive = true;
+            let roundCount = 0;
+            const maxRounds = 5;
+
+            // Sound effects (using Web Audio API for better compatibility)
+            function playSound(frequency, duration) {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Sound not supported');
+                }
+            }
+
+            function playWinSound() {
+                playSound(523, 0.3);
+                setTimeout(() => playSound(659, 0.3), 150);
+                setTimeout(() => playSound(783, 0.3), 300);
+            }
+
+            function playLoseSound() {
+                playSound(400, 0.2);
+                setTimeout(() => playSound(350, 0.2), 100);
+                setTimeout(() => playSound(300, 0.4), 200);
+            }
+
+            function playDrawSound() {
+                playSound(440, 0.2);
+            }
+
+            function playClickSound() {
+                playSound(800, 0.1);
+            }
+
+            // Splash Screen Event Listeners
+            splashComputerBtn.addEventListener('click', () => {
+                playClickSound();
+                splashScreen.classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    gameContainer.style.display = 'block';
+                    gameContainer.classList.add('animate__fadeIn');
+                    setMode('computer');
+                }, 500);
+            });
+
+            splashLocalBtn.addEventListener('click', () => {
+                playClickSound();
+                splashScreen.classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    gameContainer.style.display = 'block';
+                    gameContainer.classList.add('animate__fadeIn');
+                    setMode('local');
+                }, 500);
+            });
+
+            // Game Event Listeners
+            computerModeBtn.addEventListener('click', () => {
+                playClickSound();
+                setMode('computer');
+            });
+
+            localModeBtn.addEventListener('click', () => {
+                playClickSound();
+                setMode('local');
+            });
+
+            resetBtn.addEventListener('click', () => {
+                playClickSound();
+                resetGame();
+            });
+
+            choices.forEach(choice => {
+                choice.addEventListener('click', () => {
+                    if (!gameActive) return;
+                    
+                    playClickSound();
+                    choice.classList.add('pulse');
+                    setTimeout(() => {
+                        choice.classList.remove('pulse');
+                    }, 500);
+
+                    const userChoice = choice.id;
+                    if (mode === 'computer') {
+                        playRound(userChoice);
+                    } else {
+                        playLocalRound(userChoice);
+                    }
+                });
+            });
+
+            function setMode(newMode) {
+                mode = newMode;
+                if (mode === 'computer') {
+                    computerModeBtn.classList.add('active');
+                    localModeBtn.classList.remove('active');
+                    player1Label.textContent = 'You';
+                    player2Label.textContent = 'Computer';
+                    opponentChoiceEl.textContent = 'Computer is thinking...';
+                } else {
+                    computerModeBtn.classList.remove('active');
+                    localModeBtn.classList.add('active');
+                    player1Label.textContent = 'Player 1';
+                    player2Label.textContent = 'Player 2';
+                    opponentChoiceEl.textContent = 'Waiting for Player 1...';
+                    localTurn = 'Player 1';
+                    localPlayer1Choice = '';
+                }
+                resetGame();
+            }
+
+            function playRound(userChoice) {
+                // Show thinking animation
+                opponentChoiceEl.textContent = 'Computer is thinking...';
+                opponentChoiceEl.classList.add('animate__pulse');
+                
+                // Disable buttons during computer's turn
+                disableChoices(true);
+                
+                // Delay computer choice for better UX
+                setTimeout(() => {
+                    opponentChoiceEl.classList.remove('animate__pulse');
+                    const computerChoice = getComputerChoice();
+                    
+                    // Animate computer's choice
+                    opponentChoiceEl.textContent = `Computer chose: ${getChoiceName(computerChoice)}`;
+                    opponentChoiceEl.classList.add('animate__bounceIn');
+                    
+                    setTimeout(() => {
+                        opponentChoiceEl.classList.remove('animate__bounceIn');
+                        
+                        // Determine winner
+                        const result = determineWinner(userChoice, computerChoice);
+                        displayResult(result, userChoice, computerChoice);
+                        
+                        // Update scores
+                        if (result === 'win') {
+                            userScore++;
+                            userScoreEl.textContent = userScore;
+                            playWinSound();
+                        } else if (result === 'lose') {
+                            computerScore++;
+                            computerScoreEl.textContent = computerScore;
+                            playLoseSound();
+                        } else {
+                            playDrawSound();
+                        }
+
+                        roundCount++;
+                        checkGameEnd();
+
+                        // Re-enable choices
+                        disableChoices(false);
+                    }, 1000);
+                }, 1500);
+            }
+
+            function playLocalRound(playerChoice) {
+                if (localTurn === 'Player 1') {
+                    // Player 1's turn
+                    localPlayer1Choice = playerChoice;
+                    opponentChoiceEl.textContent = `Player 1 chose: ${getChoiceName(playerChoice)}`;
+                    opponentChoiceEl.classList.add('animate__bounceIn');
+                    
+                    setTimeout(() => {
+                        opponentChoiceEl.classList.remove('animate__bounceIn');
+                        opponentChoiceEl.textContent = 'Waiting for Player 2...';
+                        localTurn = 'Player 2';
+                        resultEl.textContent = `Player 1 chose ${getChoiceName(playerChoice)}`;
+                    }, 1000);
+                } else {
+                    // Player 2's turn
+                    const player2Choice = playerChoice;
+                    opponentChoiceEl.textContent = `Player 2 chose: ${getChoiceName(player2Choice)}`;
+                    opponentChoiceEl.classList.add('animate__bounceIn');
+                    
+                    setTimeout(() => {
+                        opponentChoiceEl.classList.remove('animate__bounceIn');
+                        
+                        // Determine winner
+                        const result = determineWinner(localPlayer1Choice, player2Choice);
+                        displayResult(result, localPlayer1Choice, player2Choice);
+                        
+                        // Update scores
+                        if (result === 'win') {
+                            userScore++;
+                            userScoreEl.textContent = userScore;
+                            playWinSound();
+                        } else if (result === 'lose') {
+                            computerScore++;
+                            computerScoreEl.textContent = computerScore;
+                            playLoseSound();
+                        } else {
+                            playDrawSound();
+                        }
+
+                        roundCount++;
+                        checkGameEnd();
+
+                        // Reset for next round
+                        localTurn = 'Player 1';
+                        localPlayer1Choice = '';
+                    }, 1000);
+                }
+            }
+
+            function getComputerChoice() {
+                const choices = ['rock', 'paper', 'scissors'];
+                const randomIndex = Math.floor(Math.random() * 3);
+                return choices[randomIndex];
+            }
+
+            function getChoiceName(choice) {
+                switch(choice) {
+                    case 'rock': return 'Rock 🪨';
+                    case 'paper': return 'Paper 📄';
+                    case 'scissors': return 'Scissors ✂️';
+                    default: return choice;
+                }
+            }
+
+            function determineWinner(userChoice, computerChoice) {
+                if (userChoice === computerChoice) {
+                    return 'draw';
+                }
+                
+                if (
+                    (userChoice === 'rock' && computerChoice === 'scissors') ||
+                    (userChoice === 'paper' && computerChoice === 'rock') ||
+                    (userChoice === 'scissors' && computerChoice === 'paper')
+                ) {
+                    return 'win';
+                }
+                
+                return 'lose';
+            }
+
+            function displayResult(result, userChoice, computerChoice) {
+                let resultText = '';
+                let resultClass = '';
+                
+                switch(result) {
+                    case 'win':
+                        resultText = `You win! ${getChoiceName(userChoice)} beats ${getChoiceName(computerChoice)}`;
+                        resultClass = 'animate__tada';
+                        resultEl.style.color = 'var(--success)';
+                        break;
+                    case 'lose':
+                        resultText = `You lose! ${getChoiceName(computerChoice)} beats ${getChoiceName(userChoice)}`;
+                        resultClass = 'animate__shakeX';
+                        resultEl.style.color = 'var(--danger)';
+                        break;
+                    case 'draw':
+                        resultText = "It's a draw!";
+                        resultClass = 'animate__flash';
+                        resultEl.style.color = 'var(--accent)';
+                        break;
+                }
+                
+                resultEl.textContent = resultText;
+                resultEl.classList.add(resultClass);
+                
+                setTimeout(() => {
+                    resultEl.classList.remove(resultClass);
+                }, 1000);
+            }
+
+            function checkGameEnd() {
+                if (roundCount >= maxRounds) {
+                    gameActive = false;
+                    let winnerMessage = '';
+                    
+                    if (userScore > computerScore) {
+                        winnerMessage = mode === 'computer' 
+                            ? '🏆 You win the game! 🏆' 
+                            : '🏆 Player 1 wins the game! 🏆';
+                        playWinSound();
+                    } else if (computerScore > userScore) {
+                        winnerMessage = mode === 'computer' 
+                            ? '😢 Computer wins the game! 😢' 
+                            : '🏆 Player 2 wins the game! 🏆';
+                        playLoseSound();
+                    } else {
+                        winnerMessage = '🤝 The game is a tie! 🤝';
+                        playDrawSound();
+                    }
+                    
+                    winnerMessageEl.textContent = winnerMessage;
+                    winnerMessageEl.classList.add('animate__bounceIn');
+                    
+                    disableChoices(true);
+                }
+            }
+
+            function disableChoices(disabled) {
+                choices.forEach(choice => {
+                    choice.disabled = disabled;
+                    choice.style.opacity = disabled ? 0.5 : 1;
+                    choice.style.cursor = disabled ? 'not-allowed' : 'pointer';
+                });
+            }
+
+            function resetGame() {
+                userScore = 0;
+                computerScore = 0;
+                roundCount = 0;
+                gameActive = true;
+                
+                userScoreEl.textContent = '0';
+                computerScoreEl.textContent = '0';
+                
+                resultEl.textContent = mode === 'computer' ? 'Make your move!' : 'Waiting for Player 1...';
+                resultEl.style.color = 'white';
+                
+                winnerMessageEl.textContent = '';
+                winnerMessageEl.classList.remove('animate__bounceIn');
+                
+                if (mode === 'local') {
+                    localTurn = 'Player 1';
+                    localPlayer1Choice = '';
+                    opponentChoiceEl.textContent = 'Waiting for Player 1...';
+                } else {
+                    opponentChoiceEl.textContent = 'Computer is thinking...';
+                }
+                
+                disableChoices(false);
+            }
+
+            // Initialize the game
+            resetGame();
+        });
+    </script>
+</body>
+</html>
